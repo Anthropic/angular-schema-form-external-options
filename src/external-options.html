@@ -1,0 +1,21 @@
+<div class="form-group" ng-class="{'has-error': hasError(), 'has-success': hasSuccess(), 'has-feedback': form.feedback !== false, 'float': form.float === true }">
+  <label class="control-label" ng-show="showTitle()">
+    {{form.title}}
+  </label><select ng-model="form.selectedOption"
+          ng-model-options="form.ngModelOptions"
+          ng-disabled="form.readonly"
+          sf-changed="form"
+          ng-change="changed()"
+          class="form-control"
+          schema-validate="form"
+          external-options
+          links="form.schema.links"
+          model="model"
+          form="form"
+          ng-options="item.value as item.name for item in form.options">
+          <option ng-show="form.selectedOption" value=""></option>
+  </select>
+  <div class="help-block"
+       ng-show="(hasError() && errorMessage(schemaError()))"
+       ng-bind-html="(hasError() && errorMessage(schemaError()))"></div>
+</div>

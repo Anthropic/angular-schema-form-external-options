@@ -1,0 +1,34 @@
+{
+  "name": "angular-schema-form-external-options",
+  "main": [
+    "bootstrap-external-options.min.js"
+  ],
+  "version": "1.0.0",
+  "authors": [
+    "Anthropic",
+    "Marcel Bennett <iamanthropic@gmail.com>"
+  ],
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "angular-schema-form",
+    "schema-form",
+    "form",
+    "json",
+    "json-schema",
+    "schema"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "coverage"
+  ],
+  "devDependencies": {
+    "angular-schema-form": ">= 0.7",
+    "angular-mocks": ">= 1.2"
+  }
+}

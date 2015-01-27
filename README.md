@@ -15,9 +15,10 @@ The external options plugin is an add-on to the Bootstrap decorator so far. To u
 Usage
 -----
 The external options add-on adds a new default mapping.
+
 | Format Type         |   Becomes            |
 |:--------------------|:--------------------:|
-| "select-external"   |   A select drop down that loads its options from an external resource if they are an object with a titleMap |
+| "select-external"   |   A select drop down that loads options from an external URI |
 
 
 | Schema                                          |   Default Form type  |

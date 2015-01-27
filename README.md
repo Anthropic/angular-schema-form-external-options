@@ -1,8 +1,6 @@
 Angular Schema Form External Options
 ====================================
 
-
-
 This is an add-on for [Angular Schema Form](https://github.com/Textalk/angular-schema-form/).
 
 Ever wanted to load select options dynamically based on other fields in your Angular Schema Form?
@@ -30,7 +28,7 @@ The external options add-on adds a new default mapping.
 
 Example
 -----------------
-Below is an example.
+Below is an example. The variables use model.variable at the moment, considering changing that in v2 if I can find an easy way to handle it without that I am happy with.
 
 ```javascript
 {
@@ -47,11 +45,8 @@ Below is an example.
     "suburb": {
       "title": "Suburb",
       "type": "string",
-      links:[
-        {
-          rel:'options',
-          href:'./data/{model.state}/{model.city}/suburb.json'
-        }
+      "links":[
+        { "rel":'options', "href":'./data/{model.state}/{model.city}/suburb.json' }
       ]
     }
   }

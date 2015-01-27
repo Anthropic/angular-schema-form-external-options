@@ -1,5 +1,7 @@
-Angular Schema Form External Options Add-on
-===========================================
+Angular Schema Form External Options
+====================================
+
+
 
 This is an add-on for [Angular Schema Form](https://github.com/Textalk/angular-schema-form/).
 

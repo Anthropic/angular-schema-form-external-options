@@ -1,5 +1,5 @@
-Angular Schema Form External Options Add-on
-===========================================
+Angular Schema Form External Options
+====================================
 
 This is an add-on for [Angular Schema Form](https://github.com/Textalk/angular-schema-form/).
 
@@ -15,9 +15,10 @@ The external options plugin is an add-on to the Bootstrap decorator so far. To u
 Usage
 -----
 The external options add-on adds a new default mapping.
+
 | Format Type         |   Becomes            |
 |:--------------------|:--------------------:|
-| "select-external"   |   A select drop down that loads its options from an external resource if they are an object with a titleMap |
+| "select-external"   |   A select drop down that loads options from an external URI |
 
 
 | Schema                                          |   Default Form type  |
@@ -45,7 +46,7 @@ To add a filter to pass over the URI just add a filter called **externalOptionUr
 
 Example
 -----------------
-Below is an example.
+Below is an example. The variables use model.variable at the moment, considering changing that in v2 if I can find an easy way to handle it without that I am happy with.
 
 ```javascript
 {
@@ -62,11 +63,8 @@ Below is an example.
     "suburb": {
       "title": "Suburb",
       "type": "string",
-      links:[
-        {
-          rel:'options',
-          href:'./data/{model.state}/{model.city}/suburb.json'
-        }
+      "links":[
+        { "rel":'options', "href":'./data/{model.state}/{model.city}/suburb.json' }
       ]
     }
   }

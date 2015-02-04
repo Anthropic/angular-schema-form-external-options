@@ -25,6 +25,24 @@ The external options add-on adds a new default mapping.
 | "type": "string" and "links[].rel": "options"   |   select-external    |
 
 
+Filtering URI
+-----------------
+
+To add a filter to pass over the URI just add a filter called **externalOptionUri**
+```javascript
+.filter('externalOptionUri', function() {
+  function externalOptionUriFilter(input){
+    var current = input;
+    if(typeof current === 'string') {
+      current = current.replace(' ','-').toLowerCase();
+    }
+    return current;
+  }
+
+  return externalOptionUriFilter;
+})
+```
+
 Example
 -----------------
 Below is an example.
@@ -55,8 +73,17 @@ Below is an example.
 }
 ```
 
-The loaded data must be in the following format currently (I'm considering adding an option to use enum as well):
+The loaded data must be in one of the following two formats:
 
+**enum**
+```javascript
+{
+  "title":"Suburb",
+  "description":"Suburbs for Melbourne, Victoria",
+  "enum":["Hawthorn","Melbourne","Richmond"]
+}
+```
+**OR titleMap**
 ```javascript
 {
   "title":"Suburb",

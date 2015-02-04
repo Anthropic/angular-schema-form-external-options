@@ -2,9 +2,6 @@
   "name": "angular-schema-form-external-options",
   "version": "1.0.0",
   "description": "External options for select add-on for Angular Schema Form",
-  "scripts": {
-    "test": "rm -fr coverage && ./node_modules/karma/bin/karma start --single-run --browsers PhantomJS karma.conf.js"
-  },
   "author": "Anthropic",
   "license": "MIT",
   "devDependencies": {

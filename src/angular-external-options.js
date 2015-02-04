@@ -15,7 +15,20 @@ angular.module('schemaForm').directive('externalOptions', function () {
       scope.externalOptions = {};
 
       var processOptions = function(optionSource, data, current) {
-        scope.form.options = data.titleMap;
+        var enumTitleMap = [];
+
+        if(data.enum && data.enum.length){
+          for(i=0; i<data.enum.length; i++) {
+            if(data.enum[i] && data.enum[i].length) {
+              enumTitleMap.push({name:data.enum[i],value:data.enum[i]});
+            };
+          };
+          //enumTitleMap.unshift({name:'-- Select --',value:''});
+          scope.form.options = enumTitleMap;
+        }
+        else if(data.titleMap) {
+          scope.form.options = data.titleMap;
+        };
 
         if(scope.externalOptions[optionSource] !== data) {
           scope.externalOptions[optionSource] = data;
@@ -27,14 +40,13 @@ angular.module('schemaForm').directive('externalOptions', function () {
 
         // determine if the new options contain the old one
         for(var i=0; i<scope.form.options.length; i++) {
-          if(scope.form.options[i].value && current === scope.form.options[i].value) {
+          if(typeof scope.form.options[i].value !== 'undefined' && current === scope.form.options[i].value) {
             scope.form.selectedOption = scope.form.options[i].value;
             return;
           }
         };
 
-        scope.form.selectedOption = null;
-        sfSelect(scope.form.key, scope.model, scope.form.selectedOption);
+        sfSelect(scope.form.key, scope.model, '');
         return;
       }
 
@@ -47,6 +59,7 @@ angular.module('schemaForm').directive('externalOptions', function () {
         };
 
         var current = sfSelect(scope.form.key, scope.model);
+        current = (current)? current: undefined;
 
         if(typeof scope.externalOptions[optionSource] === 'object') {
           processOptions(optionSource, scope.externalOptions[optionSource], current);
@@ -59,7 +72,7 @@ angular.module('schemaForm').directive('externalOptions', function () {
           })
           .error(function(data, status){
             scope.form.options = [];
-            scope.form.selectedOption = null;
+            scope.form.selectedOption = '';
             sfSelect(scope.form.key, scope.model, scope.form.selectedOption);
           });
       };
@@ -85,4 +98,14 @@ angular.module('schemaForm').directive('externalOptions', function () {
       };
     }]
   };
-});
+})
+.filter('_externalOptionUri', ['$filter', function($filter) {
+  function _externalOptionUriFilter(input) {
+    if($filter('externalOptionUri')) {
+      input = $filter('externalOptionUri')(input);
+    };
+    return input;
+  }
+
+  return _externalOptionUriFilter;
+}]);

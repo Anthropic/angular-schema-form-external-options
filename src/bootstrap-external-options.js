@@ -13,15 +13,13 @@ angular.module('schemaForm')
             var f = schemaFormProvider.stdFormObj(name, schema, options);
             f.key  = options.path;
             f.type = 'select-external';
-            f.optionSource = schema.links[i].href.replace(related,'$1$1$2$3$3');
+            f.optionSource = schema.links[i].href.replace(related,'$1$1 model.$2 | _externalOptionUri $3$3');
             f.options = [];
             f.parameters = [];
 
-
             var matched = f.optionSource.match(source);
 
-            while ((matched = source.exec(f.optionSource)) !== null)
-            {
+            while ((matched = source.exec(f.optionSource)) !== null) {
               f.parameters.push(matched);
             }
             options.lookup[sfPathProvider.stringify(options.path)] = f;

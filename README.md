@@ -1,5 +1,6 @@
 Angular Schema Form External Options
 ====================================
+**CURRENTLY IN DEVELOPMENT and not ready for production use** I released too soon and just prior to a lengthy holiday in case it may have helped someone to see the rough code. A more usable version, and example usage, is coming soon.
 
 This is an add-on for [Angular Schema Form](https://github.com/Textalk/angular-schema-form/).
 

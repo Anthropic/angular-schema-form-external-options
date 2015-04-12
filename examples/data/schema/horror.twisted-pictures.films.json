@@ -1,0 +1,11 @@
+{
+  "title":"Twisted Pictures Films",
+  "description":"Twisted Pictures Films",
+  "enum":[
+    "Saw",
+    "Dead Silence",
+    "Scanners",
+    "Wichita",
+    "The Body Snatcher"
+  ]
+}

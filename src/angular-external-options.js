@@ -6,7 +6,7 @@ angular.module('schemaForm').directive('externalOptions', function () {
       form: '=',
       model: '='
     },
-    controller:['$scope','$http','$interpolate','sfSelect', function($scope, $http, $interpolate, sfSelect){
+    controller:['$scope','$http','$interpolate','$filter','sfSelect', function($scope, $http, $interpolate, $filter, sfSelect){
       var i,
           scope = $scope
       ;
@@ -15,6 +15,10 @@ angular.module('schemaForm').directive('externalOptions', function () {
       scope.externalOptions = {};
 
       var processOptions = function(optionSource, data, current) {
+console.info("processOptions");
+console.info(optionSource);
+console.info(data);
+console.info(current);
         var enumTitleMap = [];
 
         if(data.enum && data.enum.length){
@@ -42,11 +46,15 @@ angular.module('schemaForm').directive('externalOptions', function () {
         for(var i=0; i<scope.form.options.length; i++) {
           if(typeof scope.form.options[i].value !== 'undefined' && current === scope.form.options[i].value) {
             scope.form.selectedOption = scope.form.options[i].value;
+console.info("scope.form.selectedOption");
+console.info(scope.form.selectedOption);
             return;
           }
         };
-
-        sfSelect(scope.form.key, scope.model, '');
+console.info("sfSelect ");
+console.info(scope.form.key);
+console.info(scope.model);
+        sfSelect(scope.form.key, scope.model, 'null');
         return;
       }
 
@@ -60,6 +68,8 @@ angular.module('schemaForm').directive('externalOptions', function () {
 
         var current = sfSelect(scope.form.key, scope.model);
         current = (current)? current: undefined;
+
+        optionSource = $filter('_externalOptionUri')(optionSource);
 
         if(typeof scope.externalOptions[optionSource] === 'object') {
           processOptions(optionSource, scope.externalOptions[optionSource], current);
@@ -80,7 +90,12 @@ angular.module('schemaForm').directive('externalOptions', function () {
         for(var i=0; i<scope.form.parameters.length; i++) {
           if (angular.isDefined(scope.form.parameters[i])) {
             scope.$watch(scope.form.parameters[i][1], function(newValue, oldValue) {
-              var exp, optionSource;
+console.info("newValueA");
+console.info(newValue);
+              var newValue = $filter('_externalOptionUriField')(newValue),
+                  exp, optionSource;
+console.info("newValueB");
+console.info(newValue);
               if (newValue) {
                 exp = $interpolate(scope.form.optionSource, false, null, true);
                 optionSource = exp(scope);
@@ -99,9 +114,19 @@ angular.module('schemaForm').directive('externalOptions', function () {
     }]
   };
 })
-.filter('_externalOptionUri', ['$filter', function($filter) {
+.filter('_externalOptionUriField', ['$injector','$filter', function($injector, $filter) {
+  function _externalOptionUriFieldFilter(input) {
+    if($injector.has('externalOptionUriFieldFilter')) {
+      input = $filter('externalOptionUriField')(input);
+    };
+    return input;
+  }
+
+  return _externalOptionUriFieldFilter;
+}])
+.filter('_externalOptionUri', ['$injector','$filter', function($injector, $filter) {
   function _externalOptionUriFilter(input) {
-    if($filter('externalOptionUri')) {
+    if($injector.has('externalOptionUriFilter')) {
       input = $filter('externalOptionUri')(input);
     };
     return input;
@@ -109,3 +134,113 @@ angular.module('schemaForm').directive('externalOptions', function () {
 
   return _externalOptionUriFilter;
 }]);
+
+
+/**
+ * @license Uecomm v{{version}}
+ * (c) 2014-{{year}} Singtel Optus. http://optus.com.au
+ * License: MIT
+ */
+  angular
+    .module('schemaForm')
+    .directive('destroyHiddenData', ['sfSelect', function(sfSelect) {
+      return {
+        link: function(scope, element, attrs) {
+          var preserve = false;
+
+          scope.$on('$destroy', function() {
+console.info("destroy");
+console.info(scope);
+            if(typeof scope.form.preserveOnDestroy === 'object' && scope.form.preserveOnDestroy.condition) {
+              preserve = scope.evalExpr(scope.form.preserveOnDestroy.condition);
+console.info("preserve");
+console.info(scope.evalExpr('projectType'));
+console.info(scope.evalExpr(scope.form.preserveOnDestroy.condition));
+            }
+            else if(!!scope.form.preserveOnDestroy ) {
+              preserve = true;
+            };
+
+            if(!preserve) {
+              scope.form.selectedOption = '';
+              sfSelect(scope.form.key, scope.model, scope.form.selectedOption);
+            };
+          });
+        }
+      };
+    }]);
+
+/**
+ * @license Uecomm v{{version}}
+ * (c) 2014-{{year}} Singtel Optus. http://optus.com.au
+ * License: MIT
+ */
+(function(angular, undefined) {'use strict';
+
+  angular
+    .module('schemaForm')
+    .directive('oyInline', ['schemaForm','sfValidator', 'sfPath', 'sfSelect', function (schemaForm, sfValidator, sfPath, sfSelect) {
+
+      return {
+        restrict: 'A',
+        require: 'ngModel',
+        //scope: false,
+        scope: {
+          oyInline:'=',
+          ngModel: '=',
+          ngModelOptions: '=',
+          model: '=',
+          sfChanged: '=',
+          schemaValidate: '='
+        },
+        link: function(scope, element, attrs, ngModel) {
+          console.info('oyInline');
+          console.info(scope);
+          console.info(ngModel);
+          var useKey = sfPath.stringify(scope.schemaValidate.key);
+          var schema = {};
+          var title = scope.schemaValidate.title || scope.schemaValidate.key.join('.') || '';
+          angular.copy(scope.schemaValidate.schema, schema);
+          if(schema.properties && schema.anyOf) {
+            scope.schemaValidate.schema.allowInvalid = true;
+            delete schema.properties;
+          };
+
+          ngModel.$name = title;
+          console.info('key: '+useKey);
+          ngModel.$options.allowInvalid = true;
+          scope.$watchCollection('model'+useKey, function (newVal, oldVal) {
+            if (ngModel.$validate) {
+              ngModel.$validate();
+              if (ngModel.$invalid) { // The field must be made dirty so the error message is displayed
+                ngModel.$dirty = true;
+                ngModel.$pristine = false;
+              }
+            } else {
+              ngModel.$setViewValue(ngModel.$viewValue);
+            }
+          });
+
+          ngModel.$validators = {
+            anyOf: function(modelValue, viewValue) {
+              tv4.validate(scope.ngModel, schema);
+              return tv4.valid;
+            }
+          };
+
+          // Listen to an event so we can validate the input on request
+          scope.$on('schemaFormValidate', function() {
+            if (ngModel.$validate) {
+              ngModel.$validate();
+              if (ngModel.$invalid) { // The field must be made dirty so the error message is displayed
+                ngModel.$dirty = true;
+                ngModel.$pristine = false;
+              }
+            } else {
+              ngModel.$setViewValue(ngModel.$viewValue);
+            }
+          });
+        }
+      }
+    }]);
+})(window.angular);

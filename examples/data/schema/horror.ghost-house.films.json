@@ -1,0 +1,11 @@
+{
+  "title":"Dark Castle Films",
+  "description":"Dark Castle Films",
+  "enum":[
+    "The Grudge",
+    "Drag Me to Hell",
+    "Evil Dead",
+    "Poltergeist",
+    "The Sitter"
+  ]
+}

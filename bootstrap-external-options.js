@@ -1,4 +1,4 @@
-angular.module("schemaForm").run(["$templateCache", function($templateCache) {$templateCache.put("directives/decorators/bootstrap/external-options/external-options.html","<div class=\"form-group\" ng-class=\"{\'has-error\': hasError(), \'has-success\': hasSuccess(), \'has-feedback\': form.feedback !== false, \'float\': form.float === true }\">\r\n  <label class=\"control-label\" ng-show=\"showTitle()\">\r\n    {{form.title}}\r\n  </label><select ng-model=\"form.selectedOption\"\r\n          ng-model-options=\"form.ngModelOptions\"\r\n          ng-disabled=\"form.readonly\"\r\n          sf-changed=\"form\"\r\n          ng-change=\"changed()\"\r\n          class=\"form-control\"\r\n          schema-validate=\"form\"\r\n          external-options\r\n          links=\"form.schema.links\"\r\n          model=\"model\"\r\n          form=\"form\"\r\n          ng-options=\"item.value as item.name for item in form.options\">\r\n          <option ng-show=\"form.selectedOption\" value=\"\"></option>\r\n  </select>\r\n  <div class=\"help-block\"\r\n       ng-show=\"(hasError() && errorMessage(schemaError()))\"\r\n       ng-bind-html=\"(hasError() && errorMessage(schemaError()))\"></div>\r\n</div>\r\n");}]);
+angular.module("schemaForm").run(["$templateCache", function($templateCache) {$templateCache.put("directives/decorators/bootstrap/external-options/external-options.html","<div class=\"form-group\" ng-class=\"{\'has-error\': hasError(), \'has-success\': hasSuccess(), \'has-feedback\': form.feedback !== false, \'float\': form.float === true }\">\r\n  <label class=\"control-label\" ng-show=\"showTitle()\">\r\n    {{form.title}}\r\n  </label><select ng-model=\"form.selectedOption\"\r\n          ng-model-options=\"form.ngModelOptions\"\r\n          ng-disabled=\"form.readonly\"\r\n          sf-changed=\"form\"\r\n          ng-change=\"changed()\"\r\n          class=\"form-control\"\r\n          schema-validate=\"form\"\r\n          external-options\r\n          links=\"form.schema.links\"\r\n          model=\"model\"\r\n          form=\"form\"\r\n          ng-options=\"item.value as item.name for item in form.options\" destroy-hidden-data>\r\n          <option ng-show=\"form.selectedOption\" value=\"\"></option>\r\n  </select>\r\n  <div class=\"help-block\"\r\n       ng-show=\"(hasError() && errorMessage(schemaError()))\"\r\n       ng-bind-html=\"(hasError() && errorMessage(schemaError()))\"></div>\r\n</div>\r\n");}]);
 angular.module('schemaForm').directive('externalOptions', function () {
   return {
     restrict: 'A',
@@ -7,7 +7,7 @@ angular.module('schemaForm').directive('externalOptions', function () {
       form: '=',
       model: '='
     },
-    controller:['$scope','$http','$interpolate','sfSelect', function($scope, $http, $interpolate, sfSelect){
+    controller:['$scope','$http','$interpolate','$filter','sfSelect', function($scope, $http, $interpolate, $filter, sfSelect){
       var i,
           scope = $scope
       ;
@@ -16,6 +16,10 @@ angular.module('schemaForm').directive('externalOptions', function () {
       scope.externalOptions = {};
 
       var processOptions = function(optionSource, data, current) {
+console.info("processOptions");
+console.info(optionSource);
+console.info(data);
+console.info(current);
         var enumTitleMap = [];
 
         if(data.enum && data.enum.length){
@@ -43,11 +47,15 @@ angular.module('schemaForm').directive('externalOptions', function () {
         for(var i=0; i<scope.form.options.length; i++) {
           if(typeof scope.form.options[i].value !== 'undefined' && current === scope.form.options[i].value) {
             scope.form.selectedOption = scope.form.options[i].value;
+console.info("scope.form.selectedOption");
+console.info(scope.form.selectedOption);
             return;
           }
         };
-
-        sfSelect(scope.form.key, scope.model, '');
+console.info("sfSelect ");
+console.info(scope.form.key);
+console.info(scope.model);
+        sfSelect(scope.form.key, scope.model, 'null');
         return;
       }
 
@@ -61,6 +69,8 @@ angular.module('schemaForm').directive('externalOptions', function () {
 
         var current = sfSelect(scope.form.key, scope.model);
         current = (current)? current: undefined;
+
+        optionSource = $filter('_externalOptionUri')(optionSource);
 
         if(typeof scope.externalOptions[optionSource] === 'object') {
           processOptions(optionSource, scope.externalOptions[optionSource], current);
@@ -81,7 +91,12 @@ angular.module('schemaForm').directive('externalOptions', function () {
         for(var i=0; i<scope.form.parameters.length; i++) {
           if (angular.isDefined(scope.form.parameters[i])) {
             scope.$watch(scope.form.parameters[i][1], function(newValue, oldValue) {
-              var exp, optionSource;
+console.info("newValueA");
+console.info(newValue);
+              var newValue = $filter('_externalOptionUriField')(newValue),
+                  exp, optionSource;
+console.info("newValueB");
+console.info(newValue);
               if (newValue) {
                 exp = $interpolate(scope.form.optionSource, false, null, true);
                 optionSource = exp(scope);
@@ -100,9 +115,19 @@ angular.module('schemaForm').directive('externalOptions', function () {
     }]
   };
 })
-.filter('_externalOptionUri', ['$filter', function($filter) {
+.filter('_externalOptionUriField', ['$injector','$filter', function($injector, $filter) {
+  function _externalOptionUriFieldFilter(input) {
+    if($injector.has('externalOptionUriFieldFilter')) {
+      input = $filter('externalOptionUriField')(input);
+    };
+    return input;
+  }
+
+  return _externalOptionUriFieldFilter;
+}])
+.filter('_externalOptionUri', ['$injector','$filter', function($injector, $filter) {
   function _externalOptionUriFilter(input) {
-    if($filter('externalOptionUri')) {
+    if($injector.has('externalOptionUriFilter')) {
       input = $filter('externalOptionUri')(input);
     };
     return input;
@@ -110,36 +135,172 @@ angular.module('schemaForm').directive('externalOptions', function () {
 
   return _externalOptionUriFilter;
 }]);
-angular.module('schemaForm')
-  .config(['schemaFormProvider', 'sfPathProvider', function(schemaFormProvider,  sfPathProvider) {
-    var i,
-        externalOptions
-    ;
 
-    externalOptions = function(name, schema, options) {
-      if (schema.type === 'string' && schema.links && (typeof schema.links) === 'object') {
-        for(i=0; i<schema.links.length; i++) {
-          if(schema.links[i].rel === 'options') {
-            var related = /({)([^}]*)(})/gm;
-            var source = /{{([^}]*)}}/gm;
-            var f = schemaFormProvider.stdFormObj(name, schema, options);
-            f.key  = options.path;
-            f.type = 'select-external';
-            f.optionSource = schema.links[i].href.replace(related,'$1$1 model.$2 | _externalOptionUri $3$3');
-            f.options = [];
-            f.parameters = [];
 
-            var matched = f.optionSource.match(source);
+/**
+ * @license Uecomm v{{version}}
+ * (c) 2014-{{year}} Singtel Optus. http://optus.com.au
+ * License: MIT
+ */
+  angular
+    .module('schemaForm')
+    .directive('destroyHiddenData', ['sfSelect', function(sfSelect) {
+      return {
+        link: function(scope, element, attrs) {
+          var preserve = false;
 
-            while ((matched = source.exec(f.optionSource)) !== null) {
-              f.parameters.push(matched);
+          scope.$on('$destroy', function() {
+console.info("destroy");
+console.info(scope);
+            if(typeof scope.form.preserveOnDestroy === 'object' && scope.form.preserveOnDestroy.condition) {
+              preserve = scope.evalExpr(scope.form.preserveOnDestroy.condition);
+console.info("preserve");
+console.info(scope.evalExpr('projectType'));
+console.info(scope.evalExpr(scope.form.preserveOnDestroy.condition));
             }
-            options.lookup[sfPathProvider.stringify(options.path)] = f;
-            return f;
-          }
+            else if(!!scope.form.preserveOnDestroy ) {
+              preserve = true;
+            };
+
+            if(!preserve) {
+              scope.form.selectedOption = '';
+              sfSelect(scope.form.key, scope.model, scope.form.selectedOption);
+            };
+          });
+        }
+      };
+    }]);
+
+/**
+ * @license Uecomm v{{version}}
+ * (c) 2014-{{year}} Singtel Optus. http://optus.com.au
+ * License: MIT
+ */
+(function(angular, undefined) {'use strict';
+
+  angular
+    .module('schemaForm')
+    .directive('oyInline', ['schemaForm','sfValidator', 'sfPath', 'sfSelect', function (schemaForm, sfValidator, sfPath, sfSelect) {
+
+      return {
+        restrict: 'A',
+        require: 'ngModel',
+        //scope: false,
+        scope: {
+          oyInline:'=',
+          ngModel: '=',
+          ngModelOptions: '=',
+          model: '=',
+          sfChanged: '=',
+          schemaValidate: '='
+        },
+        link: function(scope, element, attrs, ngModel) {
+          console.info('oyInline');
+          console.info(scope);
+          console.info(ngModel);
+          var useKey = sfPath.stringify(scope.schemaValidate.key);
+          var schema = {};
+          var title = scope.schemaValidate.title || scope.schemaValidate.key.join('.') || '';
+          angular.copy(scope.schemaValidate.schema, schema);
+          if(schema.properties && schema.anyOf) {
+            scope.schemaValidate.schema.allowInvalid = true;
+            delete schema.properties;
+          };
+
+          ngModel.$name = title;
+          console.info('key: '+useKey);
+          ngModel.$options.allowInvalid = true;
+          scope.$watchCollection('model'+useKey, function (newVal, oldVal) {
+            if (ngModel.$validate) {
+              ngModel.$validate();
+              if (ngModel.$invalid) { // The field must be made dirty so the error message is displayed
+                ngModel.$dirty = true;
+                ngModel.$pristine = false;
+              }
+            } else {
+              ngModel.$setViewValue(ngModel.$viewValue);
+            }
+          });
+
+          ngModel.$validators = {
+            anyOf: function(modelValue, viewValue) {
+              tv4.validate(scope.ngModel, schema);
+              return tv4.valid;
+            }
+          };
+
+          // Listen to an event so we can validate the input on request
+          scope.$on('schemaFormValidate', function() {
+            if (ngModel.$validate) {
+              ngModel.$validate();
+              if (ngModel.$invalid) { // The field must be made dirty so the error message is displayed
+                ngModel.$dirty = true;
+                ngModel.$pristine = false;
+              }
+            } else {
+              ngModel.$setViewValue(ngModel.$viewValue);
+            }
+          });
         }
       }
-    };
+    }]);
+})(window.angular);
 
-    schemaFormProvider.defaults.string.unshift(externalOptions);
-  }]);
+angular.module('schemaForm')
+  .config(['schemaFormProvider', 'schemaFormDecoratorsProvider', 'sfPathProvider',
+    function(schemaFormProvider, schemaFormDecoratorsProvider,  sfPathProvider) {
+      var i,
+          externalOptions
+      ;
+
+      externalOptions = function(name, schema, options) {
+        var schema = schema || {};
+        var stringType = (schema.type === 'string')? 'string': schema.type;
+console.info("stringType1"+(typeof stringType));
+console.info(stringType);
+        if(typeof stringType === 'Array') {
+console.info("stringType2");
+console.info(stringType);
+          stringType = !!schema.type.indexOf('string');
+        };
+console.info(stringType);
+
+        if (stringType && schema.links && (typeof schema.links) === 'object') {
+          for(i=0; i<schema.links.length; i++) {
+            if(schema.links[i].rel === 'options') {
+              var related = /({)([^}]*)(})/gm;
+              var source = /{{([^}]*)}}/gm;
+              var f = schemaFormProvider.stdFormObj(name, schema, options);
+              f.key  = options.path;
+              f.type = 'select-external';
+              f.optionSource = schema.links[i].href.replace(related,'$1$1 model.$2 | _externalOptionUri $3$3');//
+              f.options = [];
+              f.parameters = [];
+
+              var matched = f.optionSource.match(source);
+
+              while ((matched = source.exec(f.optionSource)) !== null) {
+                f.parameters.push(matched);
+              }
+              options.lookup[sfPathProvider.stringify(options.path)] = f;
+              return f;
+            }
+          }
+        }
+      };
+
+      schemaFormProvider.defaults.string.unshift(externalOptions);
+
+      //Add to the bootstrap directive
+      schemaFormDecoratorsProvider.addMapping(
+        'bootstrapDecorator',
+        'select-external',
+        'directives/decorators/bootstrap/external-options/external-options.html'
+      );
+      schemaFormDecoratorsProvider.createDirective(
+        'select-external',
+        'directives/decorators/bootstrap/external-options/external-options.html'
+      );
+
+    }
+  ]);

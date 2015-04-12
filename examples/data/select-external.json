@@ -1,0 +1,38 @@
+{
+  "schema": {
+    "type": "object",
+    "title": "Pick Your Computer",
+    "properties": {
+      "genre":  {
+        "title": "Genre",
+        "type": "string",
+        "enum":["horror","family"]
+      },
+      "studio":  {
+        "title": "Studio",
+        "type": "string",
+        "links":[
+          { "rel":"options", "href": "./data/schema/{genre}.studios.json" }
+        ]
+      },
+      "film": {
+        "title": "Favourite?",
+        "type": "string",
+        "links":[
+          { "rel":"options", "href": "./data/schema/{genre}.{studio}.films.json" }
+        ]
+      }
+    },
+    "required": ["genre","studio","film"]
+  },
+  "form": [
+    "genre",
+    "studio",
+    "film",
+    {
+      "type": "submit",
+      "style": "btn-info",
+      "title": "OK"
+    }
+  ]
+}

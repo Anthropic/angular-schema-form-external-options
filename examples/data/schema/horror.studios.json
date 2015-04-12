@@ -1,0 +1,9 @@
+{
+  "title":"Horror Studios",
+  "description":"Horror Studios",
+  "enum":[
+    "Dark Castle",
+    "Twisted Pictures",
+    "Ghost House"
+  ]
+}

@@ -12,7 +12,7 @@
           links="form.schema.links"
           model="model"
           form="form"
-          ng-options="item.value as item.name for item in form.options">
+          ng-options="item.value as item.name for item in form.options" destroy-hidden-data>
           <option ng-show="form.selectedOption" value=""></option>
   </select>
   <div class="help-block"

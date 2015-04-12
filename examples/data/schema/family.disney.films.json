@@ -1,0 +1,9 @@
+{
+  "title":"Disney Films",
+  "description":"Disney Films",
+  "enum":[
+    "Frozen",
+    "The Little Mermaid",
+    "The Lion King"
+  ]
+}

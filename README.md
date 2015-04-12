@@ -1,6 +1,6 @@
 Angular Schema Form External Options
 ====================================
-**Update 2015-04-07** I have only one last display related issue remaining to fix before I will push the more complete version of this repo with a working example to assist in implementation, I am aiming for 2015-04-12 or earlier.
+**Update 2015-04-12** I have only one last display related issue remaining to fix and it is causing me trouble, I will look to resolve soon, I have updated the repo with the latest version of the code with the example in case anyone wants to help resolve the last styling issue. I will try to find time to look at it further again this week.
 
 **CURRENTLY IN DEVELOPMENT and not ready for production use** I released too soon and just prior to a lengthy holiday in case it may have helped someone to see the rough code. A more usable version, and example usage, is coming soon.
 

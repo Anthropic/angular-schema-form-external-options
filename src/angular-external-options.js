@@ -181,21 +181,20 @@ angular.module('schemaForm').directive('externalOptions', function () {
           schemaValidate: '='
         },
         link: function(scope, element, attrs, ngModel) {
-          console.info('oyInline');
-          console.info(scope);
-          console.info(ngModel);
-          var useKey = sfPath.stringify(scope.schemaValidate.key);
-          var schema = {};
-          var title = scope.schemaValidate.title || scope.schemaValidate.key.join('.') || '';
+          var useKey = sfPath.stringify(scope.schemaValidate.key),
+              schema = {},
+              title = scope.schemaValidate.title || scope.schemaValidate.key.join('.') || '';
+
           angular.copy(scope.schemaValidate.schema, schema);
+
           if(schema.properties && schema.anyOf) {
             scope.schemaValidate.schema.allowInvalid = true;
             delete schema.properties;
           };
 
           ngModel.$name = title;
-          console.info('key: '+useKey);
           ngModel.$options.allowInvalid = true;
+
           scope.$watchCollection('model'+useKey, function (newVal, oldVal) {
             if (ngModel.$validate) {
               ngModel.$validate();

@@ -15,10 +15,6 @@ angular.module('schemaForm').directive('externalOptions', function () {
       scope.externalOptions = {};
 
       var processOptions = function(optionSource, data, current) {
-console.info("processOptions");
-console.info(optionSource);
-console.info(data);
-console.info(current);
         var enumTitleMap = [];
 
         if(data.enum && data.enum.length){
@@ -46,14 +42,10 @@ console.info(current);
         for(var i=0; i<scope.form.options.length; i++) {
           if(typeof scope.form.options[i].value !== 'undefined' && current === scope.form.options[i].value) {
             scope.form.selectedOption = scope.form.options[i].value;
-console.info("scope.form.selectedOption");
-console.info(scope.form.selectedOption);
             return;
           }
         };
-console.info("sfSelect ");
-console.info(scope.form.key);
-console.info(scope.model);
+
         sfSelect(scope.form.key, scope.model, 'null');
         return;
       }
@@ -86,16 +78,14 @@ console.info(scope.model);
             sfSelect(scope.form.key, scope.model, scope.form.selectedOption);
           });
       };
-      if (scope.form.parameters.length) {
+      if (scope.form.parameters && scope.form.parameters.length) {
         for(var i=0; i<scope.form.parameters.length; i++) {
           if (angular.isDefined(scope.form.parameters[i])) {
             scope.$watch(scope.form.parameters[i][1], function(newValue, oldValue) {
-console.info("newValueA");
-console.info(newValue);
               var newValue = $filter('_externalOptionUriField')(newValue),
-                  exp, optionSource;
-console.info("newValueB");
-console.info(newValue);
+                  exp,
+                  optionSource;
+
               if (newValue) {
                 exp = $interpolate(scope.form.optionSource, false, null, true);
                 optionSource = exp(scope);
@@ -141,6 +131,7 @@ console.info(newValue);
  * (c) 2014-{{year}} Singtel Optus. http://optus.com.au
  * License: MIT
  */
+(function(angular, undefined) {'use strict';
   angular
     .module('schemaForm')
     .directive('destroyHiddenData', ['sfSelect', function(sfSelect) {
@@ -149,13 +140,8 @@ console.info(newValue);
           var preserve = false;
 
           scope.$on('$destroy', function() {
-console.info("destroy");
-console.info(scope);
             if(typeof scope.form.preserveOnDestroy === 'object' && scope.form.preserveOnDestroy.condition) {
               preserve = scope.evalExpr(scope.form.preserveOnDestroy.condition);
-console.info("preserve");
-console.info(scope.evalExpr('projectType'));
-console.info(scope.evalExpr(scope.form.preserveOnDestroy.condition));
             }
             else if(!!scope.form.preserveOnDestroy ) {
               preserve = true;
@@ -169,6 +155,7 @@ console.info(scope.evalExpr(scope.form.preserveOnDestroy.condition));
         }
       };
     }]);
+})(window.angular);
 
 /**
  * @license Uecomm v{{version}}

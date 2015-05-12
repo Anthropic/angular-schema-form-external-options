@@ -82,8 +82,10 @@ Below is an example. The variables use model.variable at the moment, considering
 }
 ```
 
-**Local Data**
+**Local Data** must be an array of strings for now.
+
 Within the schema form controller:
+
 ```javascript
   $scope.cities = [ 'Melbourne', 'Toronto', 'London' ]
 ```
@@ -96,14 +98,14 @@ Within the form definition:
   },
 ```
 
-The loaded data must be in one of the following two formats:
+**Remotely** loaded data must be in one of the following two formats:
 
 **enum**
 ```javascript
 {
   "title":"Suburb",
   "description":"Suburbs for Melbourne, Victoria",
-  "enum":["Hawthorn","Melbourne","Richmond"]
+  "enum":[ "Hawthorn", "Melbourne", "Richmond" ]
 }
 ```
 **titleMap**
@@ -112,10 +114,10 @@ The loaded data must be in one of the following two formats:
   "title":"Suburb",
   "description":"Suburbs for Melbourne, Victoria",
   "titleMap":[
-    {"name":"Hawthorn", "value":"Hawthorn"},
-    {"name":"Melbourne",   "value":"Melbourne"},
+    {"name": "Hawthorn",  "value": "Hawthorn"},
+    {"name": "Melbourne", "value": "Melbourne"},
     ...
-    {"name":"Richmond", "value":"Richmond"}
+    {"name": "Richmond",  "value": "Richmond"}
   ]
 }
 ```

@@ -1,14 +1,14 @@
 Angular Schema Form External Options
 ====================================
-**Update 2015-04-12** I have only one last display related issue remaining to fix and it is causing me trouble, I will look to resolve soon, I have updated the repo with the latest version of the code with the example in case anyone wants to help resolve the last styling issue. I will try to find time to look at it further again this week.
-
-**CURRENTLY IN DEVELOPMENT and not ready for production use** I released too soon and just prior to a lengthy holiday in case it may have helped someone to see the rough code. A more usable version, and example usage, is coming soon.
+**TODO Update: 2015-05-12** I have only one issue remaining where blank options are being added to the drop down, any help in solving that would be appreciated given my limited time.
 
 This is an add-on for [Angular Schema Form](https://github.com/Textalk/angular-schema-form/).
 
 Ever wanted to load select options dynamically based on other fields in your Angular Schema Form?
 
 The external options add-on can do that for your form and still maintain valid JSON Schema compliance.
+
+**It can now also load options from the schema form scope.**
 
 Installation
 ------------
@@ -23,10 +23,17 @@ The external options add-on adds a new default mapping.
 |:--------------------|:--------------------:|
 | "select-external"   |   A select drop down that loads options from an external URI |
 
+To load data from an external source the type must be string and the links[].rel value must be set to 'options'
 
 | Schema                                          |   Default Form type  |
 |:------------------------------------------------|:--------------------:|
 | "type": "string" and "links[].rel": "options"   |   select-external    |
+
+To use data in the schema form scope set optionData to the variable you wish to use.
+
+| Schema             |   Form type          |   Form value    |
+|:-------------------|:--------------------:|:---------------:|
+| "type": "string"   |   select-external    |   optionData    |
 
 
 Filtering URI
@@ -47,10 +54,11 @@ To add a filter to pass over the URI just add a filter called **externalOptionUr
 })
 ```
 
-Example
+Examples
 -----------------
 Below is an example. The variables use model.variable at the moment, considering changing that in v2 if I can find an easy way to handle it without that I am happy with.
 
+**Remote Data**
 ```javascript
 {
   "type": "object",
@@ -67,11 +75,25 @@ Below is an example. The variables use model.variable at the moment, considering
       "title": "Suburb",
       "type": "string",
       "links":[
-        { "rel":'options', "href":'./data/{model.state}/{model.city}/suburb.json' }
+        { "rel":'options', "href":'./data/{state}/{city}/suburb.json' }
       ]
     }
   }
 }
+```
+
+**Local Data**
+Within the schema form controller:
+```javascript
+  $scope.cities = [ 'Melbourne', 'Toronto', 'London' ]
+```
+Within the form definition:
+```javascript
+  {
+    "key": "city",
+    "type": "select-external",
+    "optionData": "cities"
+  },
 ```
 
 The loaded data must be in one of the following two formats:
@@ -84,7 +106,7 @@ The loaded data must be in one of the following two formats:
   "enum":["Hawthorn","Melbourne","Richmond"]
 }
 ```
-**OR titleMap**
+**titleMap**
 ```javascript
 {
   "title":"Suburb",

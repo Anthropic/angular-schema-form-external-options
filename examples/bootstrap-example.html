@@ -38,7 +38,6 @@
             sf-form="form"
             sf-schema="schema"
             ng-submit="submitForm(ngform,modelData)">
-              <em>before</em><div sf-insert-field="name"></div><em>after</em>
       </form>
       <h3>Model</h3>
       <pre ng-cloak>{{pretty()}}</pre>
@@ -87,6 +86,8 @@ angular.module('test',['schemaForm']).controller('TestCtrl', function($scope,$ht
     { name: "TitleMap Examples", data: 'data/titlemaps.json' },
     { name: "Kitchen Sink", data: 'data/sink.json' }
   ];
+
+  $scope.weapons = [];
 
   $scope.selectedTest = $scope.tests[0];
 
@@ -153,7 +154,17 @@ angular.module('test',['schemaForm']).controller('TestCtrl', function($scope,$ht
     if (form.$valid) {
       alert('You did it!');
     }
-  }
+  };
+
+  $scope.switchWeapons = function() {
+    if(2 === $scope.weapons.length) {
+      $scope.weapons = ["Uzi 9mm","Plasma Rifle","Death Star"];
+    }
+    else {
+      $scope.weapons = ["Kindness","Hugs"];
+    }
+  };
+  $scope.switchWeapons();
 
 })
 // Filter added to convert variables to lowercase replacing spaces with a dash

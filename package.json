@@ -4,6 +4,10 @@
   "description": "External options for select add-on for Angular Schema Form",
   "author": "Anthropic",
   "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "build": "gulp default"
+  },
   "devDependencies": {
     "chai": "^1.9.0",
     "coveralls": "^2.11.0",

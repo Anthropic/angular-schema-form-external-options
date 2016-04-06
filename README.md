@@ -121,3 +121,11 @@ Within the form definition:
   ]
 }
 ```
+
+Building
+-----------------
+
+```bash
+$ npm install
+$ npm run build
+```

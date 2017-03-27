@@ -71,10 +71,9 @@ angular.module('schemaForm').directive('externalOptions', function() {
           };
 
           $http.get(optionSource, { responseType: 'json' })
-            .success(function(data, status) {
-              processOptions(optionSource, data, current);
-            })
-            .error(function(data, status) {
+            .then(function(res, status) {
+              processOptions(optionSource, res.data, current);
+            }, function(res, status) {
               scope.form.options = [];
               scope.form.selectedOption = '';
               sfSelect(scope.form.key, scope.model, scope.form.selectedOption);

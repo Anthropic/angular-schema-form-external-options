@@ -83,7 +83,7 @@ angular.module('schemaForm').directive('externalOptions', function() {
         if (!!scope.form.optionData) {
           scope.$parent.evalExpr('this').$watchCollection(scope.form.optionData, function(newOptions, oldOptions) {
             var options = {};
-            if (angular.isArray(newOptions) && newOptions.length) {
+            if (angular.isArray(newOptions)) {
               options = (angular.isString(newOptions[0])) ? { enum: newOptions } : { titleMap: newOptions };
             };
             processOptions('data:' + scope.form.optionData, options, scope.form.selectedOption);
